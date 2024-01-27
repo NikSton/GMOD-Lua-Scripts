@@ -4,7 +4,7 @@
 
 Roulette.Config = {
 	Command_Spin = "/spinroulette";
-    Cooldown = 3;
+    Cooldown = 30;
 	
     Messages = {
 		Prefix = {Color(255, 255, 255); "["; Color(255, 255, 0); "Roulette"; Color(255, 255, 255); "]";  " "; Color(255, 255, 255)};
