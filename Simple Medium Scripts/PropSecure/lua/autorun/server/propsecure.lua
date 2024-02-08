@@ -1,13 +1,15 @@
-PropSecure = {}
+--[[
+	PropSecure - Simple defense of props from hostile players!
+--]]
 
-function PropSecure:isPhysProp(ent)
+local function isPhysProp(ent)
 	local phys = ent:GetPhysicsObject()
 	if !phys then return end
 	return phys:GetMass() < 30
 end
 
 hook.Add("PlayerSpawnedProp", "PropSecure_SpawnProp", function(_, _, ent)
-	if PropSecure:isPhysProp(ent) then
+	if isPhysProp(ent) then
 		local phys = ent:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:AddGameFlag(FVPHYSICS_CONSTRAINT_STATIC)
@@ -48,7 +50,9 @@ end
 
 local function waitForPlayersToLeave(ent)
 	if !IsValid(ent) then return end
+
 	if ent.PhysgunPickuped then return end
+	
 	timer.Create(ent:EntIndex().."_waitForPlayersToLeaveToFreezeReal", 1, 0, function()
 		if ent.PhysgunPickuped then
 			return
@@ -125,6 +129,7 @@ end)
 
 hook.Add("OnPhysgunFreeze", "PropSecure_Freeze", function(weap, physobj, ent, ply)
 	ent.PhysgunPickuped = false
+
 	if (ent:GetClass() != "prop_physics") then return; end
 
 	local min = ent:LocalToWorld(ent:OBBMins());
@@ -155,6 +160,7 @@ hook.Add("PlayerSpawnedProp", "PropSecure_SpawnProp", function(ply, mdl, ent)
 	local min = ent:LocalToWorld(ent:OBBMins());
 	local max = ent:LocalToWorld(ent:OBBMaxs());
 	local foundEnts = ents.FindInBox(min, max);
+
 	ent:GetPhysicsObject():EnableMotion(false)
 
 	for k,v in ipairs(foundEnts) do
@@ -230,6 +236,7 @@ end)
 timer.Create("PropSecure_Checker", 5, 0, function()
 	for v,ent in pairs(ents.FindByClass("prop_physics")) do
 		if !IsValid(ent) then continue end
+		
 		if !isfunction(ent.GetPhysicsObject) or !IsValid(ent:GetPhysicsObject()) or !ent:GetPhysicsObject():IsMotionEnabled() then continue end
 
 		local min = ent:LocalToWorld(ent:OBBMins());
@@ -262,6 +269,7 @@ hook.Add("EntityTakeDamage", "PropSecure_AntiDamage", function(ply, dmg)
 	end
 
 	if !IsValid(ent) then return end
+
 	if ent:IsVehicle() then
 		dmg:ScaleDamage(0.3)
 		return
